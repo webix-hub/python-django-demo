@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Datatable Demo</title>
+	<script type="text/javascript" src="//cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="//cdn.webix.com/edge/webix.css">
+</head>
+<body>
+{% csrf_token %}
+<script type="text/javascript">
+	var header = {
+		template:"Datatable - data loading and saving",
+		type:"header"
+	};
+
+	var table = {
+		view:"datatable", id:"d1",
+		columns:[
+			{ id:"title", fillspace:true, editor:"text", sort:"string" },
+			{ id:"rank", editor:"text", sort:"int" },
+			{ id:"year", editor:"text", sort:"int" },
+			{ id:"rating", editor:"text", sort:"int" },
+			{ id:"votes", editor:"text", sort:"int" }
+		],
+		select:"row",
+		editable:true,
+		editaction:"dblclick",
+		url:"./data",
+		save:"rest->./data"
+	};
+
+	var buttons = {
+		view:"toolbar", 
+		cols:[
+			{ gravity:2 },
+			{ view:"button", value:"Add", click:function(){
+				$$("d1").add({ 
+					title:"New row",
+					year:2017, rating:0, votes:0, rank: 0
+				});
+			}},
+			{ view:"button", value:"Remove", click:function(){
+				$$("d1").remove($$("d1").getSelectedId());
+			}}
+		]
+	};
+
+	webix.attachEvent("onBeforeAjax", function(mode, url, data, xhr, headers){
+		var key = document.querySelector("[name=csrfmiddlewaretoken]").value;
+		headers["X-CSRFToken"] = key;
+	});
+
+	webix.ui({
+		rows:[header, table, buttons]
+	});
+</script>
+</body>
+</html>
